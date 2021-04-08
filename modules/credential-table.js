@@ -147,10 +147,40 @@ class CredentialTable extends LitElement {
       });
   }
 
+  getCredential(credential){
+    chrome.debugger.sendCommand(
+      {tabId: this.tabId}, "WebAuthn.getCredential",
+      {
+        authenticatorId: this.authenticatorId,
+        credentialId: credential.credentialId
+      },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          this.dispatchEvent(new CustomEvent("on-error", {
+            detail: chrome.runtime.lastError.message,
+            bubbles: true,
+            composed: true,
+          }));
+          return;
+        }
+        let keyObj = {
+          credential_id : credential.credentialId,
+          privateKey : credential.privateKey
+        }
+        var keyObject = keyObj;
+        
+        chrome.runtime.sendMessage({name: "sendCred", keyObj: keyObject}, (response) => {
+          console.log(response.status);
+        });
+        
+      });
+    
+  }
+
   export(credential) {
     let pem = `-----BEGIN PRIVATE KEY-----
-${credential.privateKey}
------END PRIVATE KEY-----`;
+    ${credential.privateKey}
+    -----END PRIVATE KEY-----`;
     let link = document.createElement("a");
     document.body.appendChild(link);
     link.download = "Private key.pem";
@@ -158,6 +188,8 @@ ${credential.privateKey}
     link.click();
     document.body.removeChild(link);
   }
+
+  
 
   render() {
     return html`
@@ -199,6 +231,10 @@ ${credential.privateKey}
                   <a @click="${this.export.bind(this, credential)}" href="#">
                     Export
                   </a>
+                </td>
+                <td class="align-center">
+                  <button id="sendCloud" @click="${this.getCredential.bind(this,credential)}"> Send credentials
+                  </button>
                 </td>
                 <td class="align-center">
                   <a @click="${this.removeCredential.bind(this, credential)}" href="#">

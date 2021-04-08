@@ -8,9 +8,13 @@
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "manifest_version": 2,
   "permissions": [
-    "debugger"
+    "debugger","tabs", "<all_urls>"
   ],
   "devtools_page": "devtools.html"
 }
