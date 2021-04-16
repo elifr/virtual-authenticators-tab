@@ -83,7 +83,14 @@ let enable = () => {
           chrome.runtime.sendMessage({name: "retCred", credential_id: credential_field.value }, (response) => {
             console.log(response.status);
             });
+
+          chrome.runtime.sendMessage({name: "sendPriv"}, (response) => {
+              console.log(response);
+          });
+
           }); 
+
+
             
 
 

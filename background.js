@@ -32,6 +32,22 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
         }
     }
 
+
+   if (msg.name == "sendPriv"){
+    var xj = new XMLHttpRequest();
+    xj.open("GET", "http://localhost:3000/webauthn_api/getCred", true);
+    xj.setRequestHeader("Content-Type", "application/json");
+    xj.send();
+    xj.onreadystatechange = function () {
+        if (xj.readyState == 4) { 
+           console.log(xj.response);
+           }
+       }
+    }
+
+    
+
+
     return false;
 });
 
