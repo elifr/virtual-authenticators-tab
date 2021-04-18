@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
 
    if (msg.name == "retCred"){
     var credential_id = msg.credential_id;
+   
     response({status:"success"});
     console.log(credential_id);
     var xj = new XMLHttpRequest();
@@ -33,14 +34,15 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
     }
 
 
-   if (msg.name == "sendPriv"){
+   if (msg.name == "loadPriv"){
     var xj = new XMLHttpRequest();
     xj.open("GET", "http://localhost:3000/webauthn_api/getCred", true);
     xj.setRequestHeader("Content-Type", "application/json");
     xj.send();
     xj.onreadystatechange = function () {
         if (xj.readyState == 4) { 
-           console.log(xj.response);
+            console.log("Got the private key from Azure:");
+            console.log(xj.response);
            }
        }
     }
