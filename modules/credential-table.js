@@ -147,6 +147,29 @@ class CredentialTable extends LitElement {
       });
   }
 
+  uploadCredential(credential){
+    chrome.debugger.sendCommand(
+      {tabId: this.tabId}, "WebAuthn.addCredential",
+      {
+        authenticatorId: this.authenticatorId,
+        credentialId: credential.credentialId
+      },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          this.dispatchEvent(new CustomEvent("on-error", {
+            detail: chrome.runtime.lastError.message,
+            bubbles: true,
+            composed: true,
+          }));
+          return;
+        }
+        authenticator.id = response.authenticatorId;
+        this.authenticators = this.authenticators.concat([authenticator]);
+      });
+  }
+
+  
+
   getCredential(credential){
     chrome.debugger.sendCommand(
       {tabId: this.tabId}, "WebAuthn.getCredential",
