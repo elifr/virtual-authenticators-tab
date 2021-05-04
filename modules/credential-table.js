@@ -127,7 +127,9 @@ class CredentialTable extends LitElement {
   }
 
   uploadCredential(){
-    let credential_id = document.querySelectorAll('input')[0].value;
+    //let credential_id = document.querySelectorAll('input')[0].value;
+    var inputField = document.querySelector('authenticator-table').shadowRoot.querySelector('credential-table').shadowRoot.querySelector('input');
+    let credential_id = inputField.value;
     
     chrome.runtime.sendMessage({name: "retCred", credential_id: credential_id}, (response) => {
   

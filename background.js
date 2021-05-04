@@ -21,29 +21,49 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
 
    if (msg.name == "retCred"){
        
-    let credential_id = msg.credential_id;
-    
-    response({status:"success"});
-    console.log(credential_id);
-    var xj = new XMLHttpRequest();
-    xj.open("POST", "http://localhost:3000/webauthn_api/retCloud", true);
-    xj.setRequestHeader("Content-Type", "application/json");
-    xj.send(JSON.stringify({ credentialId: credential_id}));
-    xj.onreadystatechange = function () {
-         if (xj.readyState == 4) { 
-            console.log("retrived ur key");
-            var keyobj = xj.response;
-            console.log(xj.response);
-            
-            }
-        }
-    }
+   
+
+        function getCred(callback) {
+            let credential_id = msg.credential_id;
+            var xhr = new XMLHttpRequest();
+          
+            xhr.onreadystatechange = (e) => {
+              if (xhr.readyState !== 4) {
+                return;
+              }
+          
+              if (xhr.status === 200) {
+                console.log('SUCCESS', xhr.responseText);
+                callback(JSON.parse(xhr.responseText));
+              } else {
+                console.warn('request_error');
+              }
+            };
+          
+            xhr.open("POST", "http://localhost:3000/webauthn_api/retCloud", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({ credentialId: credential_id}));
+          }
+          
+          getCred(data => response(data));
+          return true;
+
+
+        
+        
     
         
+   
+    }
+    
+
+   
     
 
     //   get the relevant private key 
 });
+
+
 
 
  
