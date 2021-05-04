@@ -85,21 +85,25 @@ let enable = () => {
           button2.setAttribute("style", "border-radius: 5px; color: var(--accent-text-color) ; background-colour: var(--accent-button-color); border-style: solid; border-width: 2px; padding: 0 12px; border-color: var(--accent-color); height: 24px");
           button2.innerText= "Load the credentials to the current authenticator"
           userIdContext.appendChild(button2);
-          button.addEventListener("click", (e) => {
-          chrome.runtime.sendMessage({name: "retCred", credential_id: credential_field.value }, (response) => {
-            console.log(response.status);
-            });
+          //button.addEventListener("click", (e) => {
+          //chrome.runtime.sendMessage({name: "retCred", credential_id: credential_field.value }, (response) => {
+            //console.log("panel.js");
+            //console.log(response);
+          //});
+
+          
+          //});
+
+         
+            
+            
           });
 
-          button2.addEventListener("click", (e) => {
-            chrome.runtime.sendMessage({name: "loadPriv"}, (response) => {
-              console.log(response);
-             });
-          });
+
 
           });
     
-      });
+      
     
 
 

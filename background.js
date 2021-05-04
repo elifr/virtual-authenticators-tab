@@ -1,4 +1,5 @@
 
+// send the private key to the node js end point
 chrome.runtime.onMessage.addListener((msg,sender,response) => {
     if (msg.name == "sendCred"){
         
@@ -16,10 +17,12 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
         }
     }
 
+// post the credential id to get the relevant private key 
 
    if (msg.name == "retCred"){
-    var credential_id = msg.credential_id;
-   
+       
+    let credential_id = msg.credential_id;
+    
     response({status:"success"});
     console.log(credential_id);
     var xj = new XMLHttpRequest();
@@ -28,26 +31,18 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
     xj.send(JSON.stringify({ credentialId: credential_id}));
     xj.onreadystatechange = function () {
          if (xj.readyState == 4) { 
-            console.log(xj.responseText);
+            console.log("retrived ur key");
+            var keyobj = xj.response;
+            console.log(xj.response);
+            
             }
         }
     }
+    
+        
+    
 
-
-   if (msg.name == "loadPriv"){
-    var xj = new XMLHttpRequest();
-    xj.open("GET", "http://localhost:3000/webauthn_api/getCred", true);
-    xj.setRequestHeader("Content-Type", "application/json");
-    xj.send();
-    xj.onreadystatechange = function () {
-        if (xj.readyState == 4) { 
-            console.log("Got the private key from Azure:");
-            console.log(xj.response);
-           }
-       }
-    }
-
-    return false;
+    //   get the relevant private key 
 });
 
 

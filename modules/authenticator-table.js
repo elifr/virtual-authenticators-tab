@@ -188,6 +188,8 @@ class AuthenticatorTable extends LitElement {
       });
   }
 
+  
+
   render() {
     return html`
       ${this.authenticators.length === 0 ? html`

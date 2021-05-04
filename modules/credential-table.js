@@ -126,6 +126,49 @@ class CredentialTable extends LitElement {
     super.attributeChangedCallback(name, _, value);
   }
 
+  uploadCredential(){
+    let credential_id = document.querySelectorAll('input')[0].value;
+    
+    chrome.runtime.sendMessage({name: "retCred", credential_id: credential_id}, (response) => {
+  
+      chrome.debugger.sendCommand(
+        {tabId: this.tabId}, "WebAuthn.addCredential",
+        {
+          authenticatorId: this.authenticatorId,
+          credential: {
+          credentialId: response.credential_id,
+          isResidentCredential: false,
+          privateKey: response.privateKey,
+          rpId: "localhost",
+          signCount: 1
+          }
+          
+  
+        },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.log(chrome.runtime.lastError);
+            this.dispatchEvent(new CustomEvent("on-error", {
+              detail: chrome.runtime.lastError.message,
+              bubbles: true,
+              composed: true,
+            }));
+            return;
+          }
+        
+          
+        });
+
+  
+        
+      
+
+    });
+    
+     
+    
+  }
+
   removeCredential(credential) {
     chrome.debugger.sendCommand(
       {tabId: this.tabId}, "WebAuthn.removeCredential",
@@ -147,30 +190,11 @@ class CredentialTable extends LitElement {
       });
   }
 
-  uploadCredential(credential){
-    chrome.debugger.sendCommand(
-      {tabId: this.tabId}, "WebAuthn.addCredential",
-      {
-        authenticatorId: this.authenticatorId,
-        credentialId: credential.credentialId
-      },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          this.dispatchEvent(new CustomEvent("on-error", {
-            detail: chrome.runtime.lastError.message,
-            bubbles: true,
-            composed: true,
-          }));
-          return;
-        }
-        authenticator.id = response.authenticatorId;
-        this.authenticators = this.authenticators.concat([authenticator]);
-      });
-  }
-
+ 
   
 
   getCredential(credential){
+
     chrome.debugger.sendCommand(
       {tabId: this.tabId}, "WebAuthn.getCredential",
       {
@@ -212,6 +236,9 @@ class CredentialTable extends LitElement {
     document.body.removeChild(link);
   }
 
+ 
+  
+
   
 
   render() {
@@ -234,10 +261,19 @@ class CredentialTable extends LitElement {
             ${this.credentials.length === 0 ? html`
               <tr class="align-center empty-table">
                 <td colspan="99">
-                  No Credentials. Try calling
-                  <span class="code">navigator.credentials.create()</span>
-                  from your website.
+                  NOCREDENTIALS
                 </td>
+                <td colspan="99" style="text-align:center;" >
+                
+                
+                <input id="myinput" type="text">
+                
+                <button id="loadPriv" @click="${this.uploadCredential.bind(this)}"> Load credentials
+                  </button>
+                  
+                </td>
+              
+
               </tr>
             ` : html``}
             ${this.credentials.map(credential => html`
@@ -271,6 +307,9 @@ class CredentialTable extends LitElement {
       </div>
     `;
   }
+
+  
+
 }
 
 customElements.define("credential-table", CredentialTable);
