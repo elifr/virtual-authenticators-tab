@@ -62,70 +62,11 @@ let enable = () => {
           let table = document.createElement("authenticator-table");
           document.getElementById("authenticators").appendChild(table);
           table.tabId = tabId;
-          // add the retrieve button
-          let text = document.createElement("p");
-          text.innerHTML= "Click the button if you want to retrieve your credentials from the cloud using your credential_id"
-          text.setAttribute("style","font-style: italic");
-          let credential_field = document.createElement("input");
-          credential_field.setAttribute("type","text");
-          credential_field.setAttribute("id","credential_id");
-          credential_field.setAttribute("style","border-radius: 5px; color: var(--accent-text-color); border-color: var(--accent-color);");
-          let button = document.createElement("button");
-          button.setAttribute("type","button");
-          button.setAttribute("id","retCloudButton");
-          button.setAttribute("style", "border-radius: 5px; color: var(--accent-text-color) ; background-colour: var(--accent-button-color); border-style: solid; border-width: 2px; padding: 0 12px; border-color: var(--accent-color); height: 24px");
-          button.innerText= "Retrieve the private key from the cloud"
-          let userIdContext = document.getElementById("user_id");
-          userIdContext.appendChild(text);
-          userIdContext.appendChild(credential_field);
-          userIdContext.appendChild(button);
-          let button2 = document.createElement("button");
-          button2.setAttribute("type","button");
-          button2.setAttribute("id","LoadButton");
-          button2.setAttribute("style", "border-radius: 5px; color: var(--accent-text-color) ; background-colour: var(--accent-button-color); border-style: solid; border-width: 2px; padding: 0 12px; border-color: var(--accent-color); height: 24px");
-          button2.innerText= "Load the credentials to the current authenticator"
-          userIdContext.appendChild(button2);
-          //button.addEventListener("click", (e) => {
-          //chrome.runtime.sendMessage({name: "retCred", credential_id: credential_field.value }, (response) => {
-            //console.log("panel.js");
-            //console.log(response);
-          //});
-
           
-          //});
-
-         
-            
-            
-          });
-
-
-
-          });
+        });
+          
+    });
     
-      
-    
-
-
-            
-
-          
-
-          
-
-            
-
-
-
-
-
-        
-  
-
-  
-  
-
-
 
   chrome.debugger.onDetach.addListener(source => {
     if (source.tabId == tabId) {

@@ -1,8 +1,7 @@
 
-// send the private key to the node js end point
+// Send the private key to the node js end point
 chrome.runtime.onMessage.addListener((msg,sender,response) => {
     if (msg.name == "sendCred"){
-        
         var keyObj = msg.keyObj;
         response({status:"success"});
         console.log(keyObj);
@@ -17,16 +16,14 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
         }
     }
 
+    
 // post the credential id to get the relevant private key 
 
    if (msg.name == "retCred"){
-       
-   
-
         function getCred(callback) {
+
             let credential_id = msg.credential_id;
             var xhr = new XMLHttpRequest();
-          
             xhr.onreadystatechange = (e) => {
               if (xhr.readyState !== 4) {
                 return;
@@ -45,22 +42,12 @@ chrome.runtime.onMessage.addListener((msg,sender,response) => {
             xhr.send(JSON.stringify({ credentialId: credential_id}));
           }
           
+          // Return the key object as the response
           getCred(data => response(data));
           return true;
-
-
-        
-        
-    
-        
    
     }
     
-
-   
-    
-
-    //   get the relevant private key 
 });
 
 

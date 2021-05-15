@@ -126,23 +126,28 @@ class CredentialTable extends LitElement {
     super.attributeChangedCallback(name, _, value);
   }
 
+  // Upload the credential retrieved from the cloud to the selected authenticator
   uploadCredential(){
-    //let credential_id = document.querySelectorAll('input')[0].value;
+    // Grab the input field from the document
     var inputField = document.querySelector('authenticator-table').shadowRoot.querySelector('credential-table').shadowRoot.querySelector('input');
+    // Assign the user input to the credential_id variable
     let credential_id = inputField.value;
-    
+
+    // Send message to the background script to retrieve the key from the cloud 
     chrome.runtime.sendMessage({name: "retCred", credential_id: credential_id}, (response) => {
-  
+      // Call the WebAuthn add credential method
       chrome.debugger.sendCommand(
         {tabId: this.tabId}, "WebAuthn.addCredential",
         {
           authenticatorId: this.authenticatorId,
           credential: {
+          // response is the key object retrieved from the background script after the script
+          // talks to the Node server endpoint to retrieve the key from the cloud
           credentialId: response.credential_id,
           isResidentCredential: false,
           privateKey: response.privateKey,
           rpId: "localhost",
-          signCount: 1
+          signCount: response.signCount
           }
           
   
@@ -194,9 +199,9 @@ class CredentialTable extends LitElement {
 
  
   
-
+  // Extract the credential_id and privateKey to send the cloud
   getCredential(credential){
-
+    // Get the credential using the credential_id
     chrome.debugger.sendCommand(
       {tabId: this.tabId}, "WebAuthn.getCredential",
       {
@@ -212,20 +217,23 @@ class CredentialTable extends LitElement {
           }));
           return;
         }
+        // Create the key object
         let keyObj = {
           credential_id : credential.credentialId,
-          privateKey : credential.privateKey
+          privateKey : credential.privateKey,
+          signCount : credential.signCount
         }
-        var keyObject = keyObj;
         
-        chrome.runtime.sendMessage({name: "sendCred", keyObj: keyObject}, (response) => {
+        // Send the credential to the background script to be sent to the cloud
+        chrome.runtime.sendMessage({name: "sendCred", keyObj: keyObj}, (response) => {
           console.log(response.status);
         });
         
       });
     
   }
-
+  // Export the credential_id to be stored in the user's computer 
+  // It then will be used to retrieve the credential
   export(credential) {
     let text = `-----BEGIN CREDENTIAL ID-----
     ${credential.credentialId}
@@ -263,19 +271,14 @@ class CredentialTable extends LitElement {
             ${this.credentials.length === 0 ? html`
               <tr class="align-center empty-table">
                 <td colspan="99">
-                  NOCREDENTIALS
+                  No credentials. Enter your username and click "Register" on the web application or
+                  load your credentials from the cloud using your credential_id. 
                 </td>
                 <td colspan="99" style="text-align:center;" >
-                
-                
                 <input id="myinput" type="text">
-                
                 <button id="loadPriv" @click="${this.uploadCredential.bind(this)}"> Load credentials
-                  </button>
-                  
+                </button>
                 </td>
-              
-
               </tr>
             ` : html``}
             ${this.credentials.map(credential => html`
@@ -290,11 +293,11 @@ class CredentialTable extends LitElement {
                 <td class="align-center">${credential.signCount}</td>
                 <td class="align-center">
                   <a @click="${this.export.bind(this, credential)}" href="#">
-                    Export
+                    Export the credential_id
                   </a>
                 </td>
                 <td class="align-center">
-                  <button id="sendCloud" @click="${this.getCredential.bind(this,credential)}"> Send credentials
+                  <button id="sendCloud" @click="${this.getCredential.bind(this,credential)}"> Send credentials to the cloud
                   </button>
                 </td>
                 <td class="align-center">
